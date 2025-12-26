@@ -22,12 +22,26 @@ import officeRoutes from './routes/office.routes';
 import contactRoutes from './routes/contact.routes';
 import partnerRoutes from './routes/partner.routes';
 import galleryRoutes from './routes/gallery.routes';
+import newsRoutes from './routes/news.routes';
+import eventRoutes from './routes/event.routes';
+import careerRoutes from './routes/career.routes';
+import employeeRoutes from './routes/employee.routes';
+
+
+
 
 app.use('/api/investor', investorRoutes);
 app.use('/api/office', officeRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/careers', careerRoutes);
+app.use('/api/employees', employeeRoutes);
+
+
+
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World');

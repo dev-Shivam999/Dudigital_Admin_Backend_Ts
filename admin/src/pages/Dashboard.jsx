@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useEffect, useState } from 'react';
 import { getStats, getContactStats, getPartnerStats } from '../services/api';
 import { FileText, Folder, Building, MapPin, MessageSquare, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';

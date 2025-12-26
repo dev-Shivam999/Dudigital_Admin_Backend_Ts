@@ -1,10 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import InvestorRelations from './pages/InvestorRelations';
 import OfficeManager from './pages/OfficeManager';
-import OfficeManager from './pages/OfficeManager';
 import ContactManager from './pages/ContactManager';
 import PartnerManager from './pages/PartnerManager';
 import GalleryManager from './pages/GalleryManager';
+import NewsManager from './pages/NewsManager';
+import EventManager from './pages/EventManager';
+import CareerManager from './pages/CareerManager';
+import ApplicantManager from './pages/ApplicantManager';
+
+
+
 import Dashboard from './pages/Dashboard';
 import './App.css';
 
@@ -28,6 +34,13 @@ function App() {
           <Route path="/contacts" element={<ContactManager />} />
           <Route path="/partners" element={<PartnerManager />} />
           <Route path="/gallery" element={<GalleryManager />} />
+          <Route path="/news" element={<NewsManager />} />
+          <Route path="/events" element={<EventManager />} />
+          <Route path="/careers" element={<CareerManager />} />
+          <Route path="/applicants" element={<ApplicantManager />} />
+
+
+
         </Routes>
       </div>
     </Router>
