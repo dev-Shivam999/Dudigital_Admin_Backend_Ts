@@ -111,4 +111,26 @@ export const deleteImage = async (id) => {
     return response.data;
 };
 
-// Add updateReport if needed
+// --- Sales Experts ---
+const API_URL_SALES_EXPERTS = 'http://localhost:3000/api/sales-experts';
+
+export const getSalesExperts = async () => {
+    const response = await axios.get(API_URL_SALES_EXPERTS);
+    return response.data;
+};
+
+export const addSalesExpert = async (data) => {
+    const response = await axios.post(API_URL_SALES_EXPERTS, data);
+    return response.data;
+};
+
+export const updateSalesExpert = async (id, data) => {
+    const response = await axios.put(`${API_URL_SALES_EXPERTS}/${id}`, data);
+    return response.data;
+};
+
+export const deleteSalesExpert = async (id) => {
+    const response = await axios.delete(`${API_URL_SALES_EXPERTS}/${id}`);
+    return response.data;
+};
+

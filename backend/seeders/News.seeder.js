@@ -1,4 +1,4 @@
-import NewsMedia from "../dist/models/NewsMedia.js";
+const NewsMedia = require("../dist/models/NewsMedia.js");
 
 const newsData = [
     {

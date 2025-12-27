@@ -26,6 +26,7 @@ import newsRoutes from './routes/news.routes';
 import eventRoutes from './routes/event.routes';
 import careerRoutes from './routes/career.routes';
 import employeeRoutes from './routes/employee.routes';
+import salesExpertRoutes from './routes/salesExpert.routes';
 
 
 
@@ -39,6 +40,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/sales-experts', salesExpertRoutes);
 
 
 
