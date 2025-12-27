@@ -1,4 +1,5 @@
-const NewsMedia = require("../dist/models/NewsMedia.js");
+
+const NewsMedia = require("../dist/models/News.model.js").default || require("../dist/models/News.model.js");
 
 const newsData = [
     {
@@ -129,4 +130,4 @@ const seedNewsMedia = async () => {
     }
 };
 
-export default seedNewsMedia;
+module.exports = seedNewsMedia;

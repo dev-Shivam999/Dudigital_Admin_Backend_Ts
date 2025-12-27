@@ -1,5 +1,6 @@
-import InvestorCategory from "../dist/models/InvestorCategory.js";
-import InvestorReport from "../dist/models/InvestorReport.js";
+
+const InvestorCategory = require("../dist/models/investorRelation.model.js").default || require("../dist/models/investorRelation.model.js");
+const InvestorReport = require("../dist/models/InvestorReport.model.js").default || require("../dist/models/InvestorReport.model.js");
 
 const reportsData = [
     {
@@ -229,4 +230,4 @@ const seedInvestorReports = async () => {
     }
 };
 
-export default seedInvestorReports;
+module.exports = seedInvestorReports;

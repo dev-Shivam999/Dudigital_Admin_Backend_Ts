@@ -1,4 +1,5 @@
-import Event from "../dist/models/Event.js";
+
+const Event = require("../dist/models/event.model.js").default || require("../dist/models/event.model.js");
 
 const eventsData = [
     {
@@ -118,4 +119,4 @@ const seedEvents = async () => {
     }
 };
 
-export default seedEvents;
+module.exports = seedEvents;

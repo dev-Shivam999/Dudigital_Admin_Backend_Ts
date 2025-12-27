@@ -1,6 +1,6 @@
 
-import mongoose from "mongoose";
-import InvestorCategory from "../dist/models/investorRelation.model.js";
+const mongoose = require("mongoose");
+const InvestorCategory = require("../dist/models/investorRelation.model.js").default || require("../dist/models/investorRelation.model.js");
 
 const categories = [
     { name: "Postal Ballot", slug: "postal-ballot" },
@@ -48,8 +48,10 @@ const categories = [
 
 const seedInvestorCategories = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital");
-        console.log("Connected to MongoDB");
+        if (mongoose.connection.readyState === 0) {
+            await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital");
+            console.log("Connected to MongoDB");
+        }
 
         for (const category of categories) {
             await InvestorCategory.updateOne(
@@ -63,8 +65,14 @@ const seedInvestorCategories = async () => {
     } catch (error) {
         console.error("❌ Error seeding investor categories:", error);
     } finally {
-        await mongoose.disconnect();
+        if (require.main === module) {
+            await mongoose.disconnect();
+        }
     }
 };
 
-seedInvestorCategories();
+if (require.main === module) {
+    seedInvestorCategories();
+}
+
+module.exports = seedInvestorCategories;
