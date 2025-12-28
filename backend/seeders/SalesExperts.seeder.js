@@ -3,11 +3,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
-// Load env vars if running directly
-if (require.main === module) {
-    dotenv.config({ path: path.join(__dirname, "../.env") });
-}
-
 // Helper to load models from dist
 const loadModel = (modelName) => {
     try {
@@ -23,12 +18,8 @@ const SalesExpert = loadModel("SalesExpert.model.js");
 const OfficeLocation = loadModel("OfficeLocation.model.js");
 
 const seedSalesExperts = async () => {
-    let connection;
     try {
-        if (mongoose.connection.readyState === 0) {
-            connection = await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital");
-            console.log("Connected to MongoDB");
-        }
+        // Connected to MongoDB (handled by index.js)
 
         // 🔗 Fetch offices (Use Regex for flexibility)
         const getOfficeId = async (cityPattern) => {
@@ -87,17 +78,7 @@ const seedSalesExperts = async () => {
 
     } catch (error) {
         console.error("❌ Error seeding Sales Experts:", error);
-    } finally {
-        if (connection) {
-            await mongoose.disconnect();
-            console.log("Disconnected from MongoDB");
-        }
     }
 };
-
-// Run if called directly
-if (require.main === module) {
-    seedSalesExperts();
-}
 
 module.exports = seedSalesExperts;

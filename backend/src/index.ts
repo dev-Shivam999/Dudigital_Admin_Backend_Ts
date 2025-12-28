@@ -27,6 +27,9 @@ import eventRoutes from './routes/event.routes';
 import careerRoutes from './routes/career.routes';
 import employeeRoutes from './routes/employee.routes';
 import salesExpertRoutes from './routes/salesExpert.routes';
+import videoRoutes from './routes/video.routes';
+import blogRoutes from './routes/blog.routes';
+import teamMemberRoutes from './routes/teamMember.routes';
 
 
 
@@ -41,6 +44,9 @@ app.use('/api/events', eventRoutes);
 app.use('/api/careers', careerRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/sales-experts', salesExpertRoutes);
+app.use('/api/videos', videoRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/team-members', teamMemberRoutes);
 
 
 

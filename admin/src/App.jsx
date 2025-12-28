@@ -10,6 +10,11 @@ import EventManager from './pages/EventManager';
 import CareerManager from './pages/CareerManager';
 import ApplicantManager from './pages/ApplicantManager';
 import SalesExpertManager from './pages/SalesExpertManager';
+import VideoManager from './pages/VideoManager';
+import BlogManager from './pages/BlogManager';
+import BlogManager from './pages/BlogManager';
+import BlogEditor from './pages/BlogEditor';
+import TeamMemberManager from './pages/TeamMemberManager';
 import Dashboard from './pages/Dashboard';
 import './App.css';
 
@@ -29,6 +34,9 @@ function App() {
           <Link to="/careers">Careers</Link>
           <Link to="/applicants">Applicants</Link>
           <Link to="/sales-experts">Sales Experts</Link>
+          <Link to="/videos">Videos</Link>
+          <Link to="/blogs">Blogs</Link>
+          <Link to="/team-members">Team</Link>
         </nav>
 
         <Routes>
@@ -43,6 +51,11 @@ function App() {
           <Route path="/careers" element={<CareerManager />} />
           <Route path="/applicants" element={<ApplicantManager />} />
           <Route path="/sales-experts" element={<SalesExpertManager />} />
+          <Route path="/videos" element={<VideoManager />} />
+          <Route path="/blogs" element={<BlogManager />} />
+          <Route path="/blogs/new" element={<BlogEditor />} />
+          <Route path="/blogs/edit/:id" element={<BlogEditor />} />
+          <Route path="/team-members" element={<TeamMemberManager />} />
         </Routes>
       </div>
     </Router>

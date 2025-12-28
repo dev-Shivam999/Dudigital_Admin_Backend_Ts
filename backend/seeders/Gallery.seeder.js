@@ -20,11 +20,6 @@ const GallerySeeder = async () => {
     }
 }
 
-if (require.main === module) {
-    // Basic connection if run directly (assuming .env logic needed or local default)
-    const mongoose = require("mongoose");
-    mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital")
-        .then(() => GallerySeeder().then(() => mongoose.disconnect()));
-}
+
 
 module.exports = GallerySeeder;

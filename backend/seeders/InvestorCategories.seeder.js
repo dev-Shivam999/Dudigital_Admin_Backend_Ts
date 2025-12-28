@@ -47,32 +47,22 @@ const categories = [
 ];
 
 const seedInvestorCategories = async () => {
-    try {
-        if (mongoose.connection.readyState === 0) {
-            await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital");
-            console.log("Connected to MongoDB");
-        }
+    
+        try {
+            // Connected to MongoDB (handled by index.js)
 
-        for (const category of categories) {
-            await InvestorCategory.updateOne(
-                { slug: category.slug },
-                { $setOnInsert: category },
-                { upsert: true }
-            );
-        }
+            for (const category of categories) {
+                await InvestorCategory.updateOne(
+                    { slug: category.slug },
+                    { $setOnInsert: category },
+                    { upsert: true }
+                );
+            }
 
-        console.log("✅ Investor categories seeded successfully");
-    } catch (error) {
-        console.error("❌ Error seeding investor categories:", error);
-    } finally {
-        if (require.main === module) {
-            await mongoose.disconnect();
+            console.log("✅ Investor categories seeded successfully");
+        } catch (error) {
+            console.error("❌ Error seeding investor categories:", error);
         }
-    }
-};
-
-if (require.main === module) {
-    seedInvestorCategories();
 }
 
-module.exports = seedInvestorCategories;
+    module.exports = seedInvestorCategories;

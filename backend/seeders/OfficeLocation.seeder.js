@@ -169,8 +169,7 @@ const globalData = [
 
 const seedOfficeData = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/dudigital");
-        console.log("Connected to MongoDB");
+        // Connected to MongoDB (handled by index.js)
 
         // 1. Seed Office Types
         console.log("Seeding Office Types...");
@@ -248,9 +247,7 @@ const seedOfficeData = async () => {
         console.log("✅ Office seeding completed successfully");
     } catch (error) {
         console.error("❌ Error seeding offices:", error);
-    } finally {
-        await mongoose.disconnect();
     }
 };
 
-seedOfficeData();
+module.exports = seedOfficeData;

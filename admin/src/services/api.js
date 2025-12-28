@@ -134,3 +134,76 @@ export const deleteSalesExpert = async (id) => {
     return response.data;
 };
 
+// --- Videos ---
+const API_URL_VIDEOS = 'http://localhost:3000/api/videos';
+
+export const getVideos = async () => {
+    const response = await axios.get(API_URL_VIDEOS);
+    return response.data;
+};
+
+export const createVideo = async (data) => {
+    const response = await axios.post(API_URL_VIDEOS, data);
+    return response.data;
+};
+
+export const updateVideo = async (id, data) => {
+    const response = await axios.put(`${API_URL_VIDEOS}/${id}`, data);
+    return response.data;
+};
+
+export const deleteVideo = async (id) => {
+    const response = await axios.delete(`${API_URL_VIDEOS}/${id}`);
+    return response.data;
+};
+
+// --- Blogs ---
+const API_URL_BLOGS = 'http://localhost:3000/api/blogs';
+
+export const getBlogs = async (page = 1, limit = 10) => {
+    const response = await axios.get(`${API_URL_BLOGS}?page=${page}&limit=${limit}`);
+    return response.data;
+};
+
+export const getBlog = async (id) => {
+    const response = await axios.get(`${API_URL_BLOGS}/${id}`);
+    return response.data;
+};
+
+export const createBlog = async (data) => {
+    const response = await axios.post(API_URL_BLOGS, data);
+    return response.data;
+};
+
+export const updateBlog = async (id, data) => {
+    const response = await axios.put(`${API_URL_BLOGS}/${id}`, data);
+    return response.data;
+};
+
+export const deleteBlog = async (id) => {
+    const response = await axios.delete(`${API_URL_BLOGS}/${id}`);
+    return response.data;
+};
+
+// --- Team Members ---
+const API_URL_TEAM = 'http://localhost:3000/api/team-members';
+
+export const getTeamMembers = async (groupBy = '') => {
+    const response = await axios.get(`${API_URL_TEAM}${groupBy ? `?groupBy=${groupBy}` : ''}`);
+    return response.data;
+};
+
+export const createTeamMember = async (data) => {
+    const response = await axios.post(API_URL_TEAM, data);
+    return response.data;
+};
+
+export const updateTeamMember = async (id, data) => {
+    const response = await axios.put(`${API_URL_TEAM}/${id}`, data);
+    return response.data;
+};
+
+export const deleteTeamMember = async (id) => {
+    const response = await axios.delete(`${API_URL_TEAM}/${id}`);
+    return response.data;
+};
