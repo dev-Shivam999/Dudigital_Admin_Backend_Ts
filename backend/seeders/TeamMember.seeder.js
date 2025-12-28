@@ -1,4 +1,4 @@
-const TeamMember = require("../dist/models/TeamMember.model.js").default|| require("../dist/models/TeamMember.model.js");
+const TeamMember = require("../dist/models/TeamMember.model.js").default || require("../dist/models/TeamMember.model.js");
 
 const teamMembers = [
     {
@@ -64,4 +64,4 @@ const seedTeamMembers = async () => {
     }
 };
 
-export default seedTeamMembers;
+module.exports = seedTeamMembers;

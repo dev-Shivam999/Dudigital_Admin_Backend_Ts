@@ -1,4 +1,5 @@
-const Blog = require("../dist/models/blog.model.js").default || require("../dist/models/blog.model.js");
+
+const Blog = require("../dist/models/Blog.model.js").default || require("../dist/models/Blog.model.js");
 
 const blogs = [
     {
@@ -152,4 +153,4 @@ const seedBlogs = async () => {
     }
 };
 
-export default seedBlogs;
+module.exports = seedBlogs;
