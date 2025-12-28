@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import InvestorRelations from "./pages/InvestorRelations";
 import OfficeManager from "./pages/OfficeManager";
@@ -14,15 +14,55 @@ import VideoManager from "./pages/VideoManager";
 import BlogManager from "./pages/BlogManager";
 import BlogEditor from "./pages/BlogEditor";
 import TeamMemberManager from "./pages/TeamMemberManager";
+import UserManager from "./pages/UserManager";
 import Dashboard from "./pages/Dashboard";
 import "./components/Layout.css";
 import "./App.css";
 
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Login from "./pages/Login";
+
+const RequireAuth = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div>Loading...</div>;
+
+  if (!user) {
+      window.location.href = "/login";
+      return null;
+  }
+  
+  return children;
+};
+
+const RoleBasedRedirect = ({ children }) => {
+    const { user } = useAuth();
+    const location = useLocation();
+
+    if (location.pathname === "/" && user && user.role !== 'admin') {
+        if (user.role === 'sales') return <Navigate to="/contacts" replace />;
+        if (user.role === 'hr') return <Navigate to="/team-members" replace />;
+        
+        if (user.permissions?.includes('manage_contacts')) return <Navigate to="/contacts" replace />;
+        if (user.permissions?.includes('manage_team')) return <Navigate to="/team-members" replace />;
+    }
+    return children;
+};
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          <Route path="/" element={
+              <RequireAuth>
+                  <RoleBasedRedirect>
+                    <Layout />
+                  </RoleBasedRedirect>
+              </RequireAuth>
+          }>
           <Route index element={<Dashboard />} />
           <Route path="investor-relations" element={<InvestorRelations />} />
           <Route path="offices" element={<OfficeManager />} />
@@ -39,9 +79,11 @@ function App() {
           <Route path="blogs/new" element={<BlogEditor />} />
           <Route path="blogs/edit/:id" element={<BlogEditor />} />
           <Route path="team-members" element={<TeamMemberManager />} />
+          <Route path="users" element={<UserManager />} />
         </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

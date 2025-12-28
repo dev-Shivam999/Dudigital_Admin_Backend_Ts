@@ -20,30 +20,47 @@ import {
   Bell,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { user, logout } = useAuth();
   const location = useLocation();
 
+  // Define required permissions for each route. 
+  // If requiredPermission is undefined, everyone sees it (or just check for generic 'admin' access).
+  // Admin role sees everything.
   const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
+    { name: "Dashboard", href: "/", icon: LayoutDashboard, requiredPermission: "view_dashboard" },
     { name: "Content Management", type: "section" },
-    { name: "Blogs", href: "/blogs", icon: PenTool },
-    { name: "News", href: "/news", icon: Newspaper },
-    { name: "Events", href: "/events", icon: Calendar },
-    { name: "Gallery", href: "/gallery", icon: Images },
-    { name: "Videos", href: "/videos", icon: Play },
+    { name: "Blogs", href: "/blogs", icon: PenTool, requiredPermission: "manage_blogs" },
+    { name: "News", href: "/news", icon: Newspaper, requiredPermission: "manage_news" },
+    { name: "Events", href: "/events", icon: Calendar, requiredPermission: "manage_events" },
+    { name: "Gallery", href: "/gallery", icon: Images, requiredPermission: "manage_gallery" },
+    { name: "Videos", href: "/videos", icon: Play, requiredPermission: "manage_videos" },
     { name: "Business Management", type: "section" },
-    { name: "Investor Relations", href: "/investor-relations", icon: FileText },
-    { name: "Offices", href: "/offices", icon: Building2 },
-    { name: "Partners", href: "/partners", icon: Users },
-    { name: "Careers", href: "/careers", icon: Briefcase },
+    { name: "Investor Relations", href: "/investor-relations", icon: FileText, requiredPermission: "manage_investors" },
+    { name: "Offices", href: "/offices", icon: Building2, requiredPermission: "manage_offices" },
+    { name: "Partners", href: "/partners", icon: Users, requiredPermission: "manage_partners" },
+    { name: "Careers", href: "/careers", icon: Briefcase, requiredPermission: "manage_careers" },
     { name: "Team Management", type: "section" },
-    { name: "Team Members", href: "/team-members", icon: UserCheck },
-    { name: "Sales Experts", href: "/sales-experts", icon: Users },
+    { name: "Team Members", href: "/team-members", icon: UserCheck, requiredPermission: "manage_team" },
+    { name: "Sales Experts", href: "/sales-experts", icon: Users, requiredPermission: "manage_sales" },
     { name: "Communication", type: "section" },
-    { name: "Inquiries", href: "/contacts", icon: MessageSquare },
-    { name: "Applicants", href: "/applicants", icon: UserCheck },
+    { name: "Inquiries", href: "/contacts", icon: MessageSquare, requiredPermission: "manage_contacts" },
+    { name: "Applicants", href: "/applicants", icon: UserCheck, requiredPermission: "manage_applicants" },
+    { name: "System", type: "section" },
+    { name: "User Management", href: "/users", icon: UserCheck, requiredPermission: "manage_users" }, // Handled by admin check in backend usually, but for UI hiding
   ];
+
+  const hasAccess = (item) => {
+      if (item.type === "section") return true; 
+      if (!item.requiredPermission) return true; // Public/Common items
+      if (user?.role === 'admin') return true;
+      // Special case for Dashboard if we don't want to explicitely add 'view_dashboard' to every admin user object, 
+      // but rely on the role check above. However, for others to NOT see it, the permission check is good.
+      return user?.permissions?.includes(item.requiredPermission);
+  };
 
   const isActive = (href) => {
     if (href === "/") return location.pathname === "/";
@@ -71,7 +88,11 @@ const Layout = () => {
 
         <nav className="sidebar-nav">
           {navigation.map((item, index) => {
+             if (!hasAccess(item)) return null;
+
             if (item.type === "section") {
+                // Determine if we should show section header: only if there are visible children
+                 // This is a simplified check; for perfect UI we might want to hide empty sections
               return (
                 <div key={index} className="nav-section">
                   <span className="nav-section-title">{item.name}</span>
@@ -120,13 +141,13 @@ const Layout = () => {
             </button>
             <div className="user-menu">
               <div className="user-avatar">
-                <span>AD</span>
+                <span>{user?.name?.charAt(0).toUpperCase() || 'U'}</span>
               </div>
               <div className="user-info">
-                <span className="user-name">Admin</span>
-                <span className="user-role">Administrator</span>
+                <span className="user-name">{user?.name}</span>
+                <span className="user-role">{user?.role}</span>
               </div>
-              <button className="logout-btn">
+              <button className="logout-btn" onClick={logout}>
                 <LogOut size={16} />
               </button>
             </div>

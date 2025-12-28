@@ -8,6 +8,47 @@ const API_URL_CONTACT = `${API_BASE_URL}/contact`;
 const API_URL_PARTNER = `${API_BASE_URL}/partner`;
 const API_URL_GALLERY = `${API_BASE_URL}/gallery`;
 
+const API_URL_AUTH = `${API_BASE_URL}/auth`;
+
+// Add auth token to requests
+axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+// --- Auth ---
+export const login = async (email, password) => {
+    const response = await axios.post(`${API_URL_AUTH}/login`, { email, password });
+    return response.data;
+};
+
+
+// --- User Management ---
+const API_URL_USERS = `${API_BASE_URL}/users`;
+
+export const getUsers = async () => {
+    const response = await axios.get(API_URL_USERS);
+    return response.data;
+};
+
+export const createUser = async (userData) => {
+    const response = await axios.post(API_URL_USERS, userData);
+    return response.data;
+};
+
+export const updateUser = async (id, userData) => {
+    const response = await axios.put(`${API_URL_USERS}/${id}`, userData);
+    return response.data;
+};
+
+export const deleteUser = async (id) => {
+    const response = await axios.delete(`${API_URL_USERS}/${id}`);
+    return response.data;
+};
+
 // --- Investor Relations ---
 export const getStats = async () => {
     const response = await axios.get(`${API_URL_INVESTOR}/stats`);

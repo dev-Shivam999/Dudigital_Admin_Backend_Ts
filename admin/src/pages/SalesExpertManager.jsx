@@ -14,6 +14,8 @@ const SalesExpertManager = () => {
     // Form state
     const [formData, setFormData] = useState({
         name: '',
+        email: '',
+        password: '',
         designation: '',
         region: '',
         phone: '',
@@ -54,7 +56,11 @@ const SalesExpertManager = () => {
         e.preventDefault();
         try {
             if (editingId) {
-                await updateSalesExpert(editingId, formData);
+                // Remove password if empty or not needed for update (handled by backend usually)
+                const updateData = { ...formData };
+                if (!updateData.password) delete updateData.password;
+                
+                await updateSalesExpert(editingId, updateData);
                 alert("Sales Expert Updated!");
             } else {
                 await addSalesExpert(formData);
@@ -64,6 +70,8 @@ const SalesExpertManager = () => {
             // Reset form
             setFormData({
                 name: '',
+                email: '',
+                password: '',
                 designation: '',
                 region: '',
                 phone: '',
@@ -81,6 +89,8 @@ const SalesExpertManager = () => {
     const handleEdit = (expert) => {
         setFormData({
             name: expert.name,
+            email: expert.email || '',
+            password: '', // Don't show password
             designation: expert.designation || '',
             region: expert.region,
             phone: expert.phone,
@@ -106,6 +116,8 @@ const SalesExpertManager = () => {
     const handleCancelEdit = () => {
         setFormData({
             name: '',
+            email: '',
+            password: '',
             designation: '',
             region: '',
             phone: '',
@@ -134,6 +146,30 @@ const SalesExpertManager = () => {
                                 style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                             />
                         </div>
+
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Email*</label>
+                            <input 
+                                required
+                                type="email"
+                                value={formData.email}
+                                onChange={e => setFormData({...formData, email: e.target.value})}
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                            />
+                        </div>
+
+                        {!editingId && (
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '5px' }}>Password*</label>
+                                <input 
+                                    required
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={e => setFormData({...formData, password: e.target.value})}
+                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                />
+                            </div>
+                        )}
 
                         <div>
                             <label style={{ display: 'block', marginBottom: '5px' }}>Designation</label>
