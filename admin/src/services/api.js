@@ -1,10 +1,12 @@
 import axios from 'axios';
 
-const API_URL_INVESTOR = 'http://localhost:3000/api/investor';
-const API_URL_OFFICE = 'http://localhost:3000/api/office';
-const API_URL_CONTACT = 'http://localhost:3000/api/contact';
-const API_URL_PARTNER = 'http://localhost:3000/api/partner';
-const API_URL_GALLERY = 'http://localhost:3000/api/gallery';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+const API_URL_INVESTOR = `${API_BASE_URL}/investor`;
+const API_URL_OFFICE = `${API_BASE_URL}/office`;
+const API_URL_CONTACT = `${API_BASE_URL}/contact`;
+const API_URL_PARTNER = `${API_BASE_URL}/partner`;
+const API_URL_GALLERY = `${API_BASE_URL}/gallery`;
 
 // --- Investor Relations ---
 export const getStats = async () => {
@@ -112,7 +114,7 @@ export const deleteImage = async (id) => {
 };
 
 // --- Sales Experts ---
-const API_URL_SALES_EXPERTS = 'http://localhost:3000/api/sales-experts';
+const API_URL_SALES_EXPERTS = `${API_BASE_URL}/sales-experts`;
 
 export const getSalesExperts = async () => {
     const response = await axios.get(API_URL_SALES_EXPERTS);
@@ -135,7 +137,7 @@ export const deleteSalesExpert = async (id) => {
 };
 
 // --- Videos ---
-const API_URL_VIDEOS = 'http://localhost:3000/api/videos';
+const API_URL_VIDEOS = `${API_BASE_URL}/videos`;
 
 export const getVideos = async () => {
     const response = await axios.get(API_URL_VIDEOS);
@@ -158,7 +160,7 @@ export const deleteVideo = async (id) => {
 };
 
 // --- Blogs ---
-const API_URL_BLOGS = 'http://localhost:3000/api/blogs';
+const API_URL_BLOGS = `${API_BASE_URL}/blogs`;
 
 export const getBlogs = async (page = 1, limit = 10) => {
     const response = await axios.get(`${API_URL_BLOGS}?page=${page}&limit=${limit}`);
@@ -186,7 +188,7 @@ export const deleteBlog = async (id) => {
 };
 
 // --- Team Members ---
-const API_URL_TEAM = 'http://localhost:3000/api/team-members';
+const API_URL_TEAM = `${API_BASE_URL}/team-members`;
 
 export const getTeamMembers = async (groupBy = '') => {
     const response = await axios.get(`${API_URL_TEAM}${groupBy ? `?groupBy=${groupBy}` : ''}`);

@@ -15,6 +15,7 @@ const seedSalesExperts = require("./SalesExperts.seeder");
 const seedEvents = require("./event.seeder");
 const seedVideos = require("./video.seeder");
 const seedBlogs = require("./Blog.seeder");
+const TeamMember =require("./TeamMember.seeder")
 
 const seedAll = async () => {
     try {
@@ -52,6 +53,8 @@ const seedAll = async () => {
 
         console.log("\n--- Seeding Sales Experts ---");
         await seedSalesExperts();
+        console.log("\n--- Seeding Team Member ---");
+        await TeamMember();
 
         console.log("\n✅ All seeders executed successfully!");
         process.exit(0);

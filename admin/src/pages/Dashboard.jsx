@@ -1,128 +1,374 @@
-import { useEffect, useState } from 'react';
-import { getStats, getContactStats, getPartnerStats } from '../services/api';
-import { FileText, Folder, Building, MapPin, MessageSquare, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { getStats, getContactStats, getPartnerStats } from "../services/api";
+import {
+  FileText,
+  Folder,
+  Building,
+  MapPin,
+  MessageSquare,
+  Users,
+  TrendingUp,
+  Activity,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function fetchStats() {
-            try {
-                const [mainStats, contactStats, partnerStats] = await Promise.all([
-                    getStats(),
-                    getContactStats(),
-                    getPartnerStats()
-                ]);
-                
-                // Merge stats
-                setStats({
-                    ...mainStats,
-                    contacts: contactStats,
-                    partners: partnerStats,
-                });
-            } catch (error) {
-                console.error("Error fetching stats", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchStats();
-    }, []);
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const [mainStats, contactStats, partnerStats] = await Promise.all([
+          getStats(),
+          getContactStats(),
+          getPartnerStats(),
+        ]);
 
-    if (loading) return <div style={{ padding: '2rem' }}>Loading Dashboard...</div>;
-    if (!stats) return <div style={{ padding: '2rem' }}>Error loading stats.</div>;
+        // Merge stats
+        setStats({
+          ...mainStats,
+          contacts: contactStats,
+          partners: partnerStats,
+        });
+      } catch (error) {
+        console.error("Error fetching stats", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
 
-    const cards = [
-        { title: "Today's Queries", count: stats.contacts?.today || 0, icon: <MessageSquare size={30} />, color: "#8e44ad" },
-        { title: "Total Queries", count: stats.contacts?.total || 0, icon: <MessageSquare size={30} />, color: "#8e44ad" },
-        
-        { title: "Partner Requests", count: stats.partners?.total || 0, icon: <Users size={30} />, color: "#d35400" },
-        
-        { title: "Investor Reports", count: stats.counts?.reports || stats.counts.reports, icon: <FileText size={30} />, color: "#3498db" },
-        { title: "Categories", count: stats.counts?.categories || stats.counts.categories, icon: <Folder size={30} />, color: "#f1c40f" },
-        { title: "Office Types", count: stats.counts?.officeTypes || stats.counts.officeTypes, icon: <Building size={30} />, color: "#e74c3c" },
-        { title: "Locations", count: stats.counts?.locations || stats.counts.locations, icon: <MapPin size={30} />, color: "#2ecc71" }
-    ];
-
+  if (loading) {
     return (
-        <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-            <h1>Admin Dashboard</h1>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
-                {cards.map((card, idx) => (
-                    <div key={idx} style={{ 
-                        padding: '1.5rem', 
-                        borderRadius: '8px', 
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)', 
-                        backgroundColor: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderLeft: `5px solid ${card.color}`
-                    }}>
-                        <div>
-                            <div style={{ fontSize: '0.9rem', color: '#666' }}>{card.title}</div>
-                            <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>{card.count}</div>
-                        </div>
-                        <div style={{ color: card.color }}>{card.icon}</div>
-                    </div>
-                ))}
-            </div>
-
-            <div style={{ marginTop: '3rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                    <h3>Recent Investor Reports</h3>
-                    <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', overflow: 'hidden' }}>
-                        {stats.recentReports.length === 0 ? (
-                            <div style={{ padding: '1rem' }}>No reports yet.</div>
-                        ) : (
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ background: '#f8f9fa' }}>
-                                    <tr>
-                                        <th style={{ padding: '10px', textAlign: 'left' }}>Title</th>
-                                        <th style={{ padding: '10px', textAlign: 'left' }}>Category</th>
-                                        <th style={{ padding: '10px', textAlign: 'left' }}>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {stats.recentReports.map(report => (
-                                        <tr key={report._id} style={{ borderBottom: '1px solid #eee' }}>
-                                            <td style={{ padding: '10px' }}>{report.title}</td>
-                                            <td style={{ padding: '10px' }}>
-                                                <span style={{ fontSize: '0.8rem', background: '#eef', padding: '2px 6px', borderRadius: '4px' }}>
-                                                    {report.categoryId?.name || 'N/A'}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: '10px', fontSize: '0.9rem', color: '#666' }}>
-                                                {new Date(report.uploadedDate).toLocaleDateString()}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                    <div style={{ marginTop: '10px', textAlign: 'right' }}>
-                        <Link to="/investor-relations" style={{ color: '#007bff', textDecoration: 'none' }}>Manage Reports &rarr;</Link>
-                    </div>
-                </div>
-
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                    <h3>Quick Actions</h3>
-                    <div style={{ display: 'grid', gap: '10px' }}>
-                         <Link to="/investor-relations" style={{ padding: '1rem', background: 'white', border: '1px solid #ddd', borderRadius: '6px', textDecoration: 'none', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <FileText size={20} /> Upload New Report
-                         </Link>
-                         <Link to="/offices" style={{ padding: '1rem', background: 'white', border: '1px solid #ddd', borderRadius: '6px', textDecoration: 'none', color: '#333', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <MapPin size={20} /> Add New Office Location
-                         </Link>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div className="loading">
+        <div className="spinner"></div>
+        Loading Dashboard...
+      </div>
     );
+  }
+
+  if (!stats) {
+    return (
+      <div className="card">
+        <div className="card-body text-center">
+          <h3 className="text-danger">Error loading dashboard data</h3>
+          <p className="text-muted">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
+
+  const statCards = [
+    {
+      title: "Today's Inquiries",
+      count: stats.contacts?.today || 0,
+      icon: <MessageSquare size={24} />,
+      color: "#8b5cf6",
+      trend: "+12%",
+      description: "New inquiries today",
+    },
+    {
+      title: "Total Inquiries",
+      count: stats.contacts?.total || 0,
+      icon: <MessageSquare size={24} />,
+      color: "#3b82f6",
+      trend: "+8%",
+      description: "All time inquiries",
+    },
+    {
+      title: "Partner Requests",
+      count: stats.partners?.total || 0,
+      icon: <Users size={24} />,
+      color: "#10b981",
+      trend: "+15%",
+      description: "Partnership applications",
+    },
+    {
+      title: "Investor Reports",
+      count: stats.counts?.reports || 0,
+      icon: <FileText size={24} />,
+      color: "#f59e0b",
+      trend: "+5%",
+      description: "Published reports",
+    },
+    {
+      title: "Office Locations",
+      count: stats.counts?.locations || 0,
+      icon: <MapPin size={24} />,
+      color: "#ef4444",
+      trend: "0%",
+      description: "Active locations",
+    },
+    {
+      title: "Categories",
+      count: stats.counts?.categories || 0,
+      icon: <Folder size={24} />,
+      color: "#06b6d4",
+      trend: "+2%",
+      description: "Content categories",
+    },
+  ];
+
+  return (
+    <div className="dashboard">
+      {/* Welcome Section */}
+      <div className="mb-4">
+        <h1 className="mb-2">Welcome back, Admin</h1>
+        <p className="text-muted">
+          Here's what's happening with your admin panel today.
+        </p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 mb-4">
+        {statCards.map((card, idx) => (
+          <div key={idx} className="card">
+            <div className="card-body">
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <div
+                  className="d-flex align-items-center justify-content-center"
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    backgroundColor: `${card.color}15`,
+                    color: card.color,
+                  }}>
+                  {card.icon}
+                </div>
+                <div className="d-flex align-items-center gap-1 text-success">
+                  <TrendingUp size={16} />
+                  <span style={{ fontSize: "0.875rem", fontWeight: "500" }}>
+                    {card.trend}
+                  </span>
+                </div>
+              </div>
+              <h3
+                className="mb-1"
+                style={{ fontSize: "2rem", fontWeight: "700" }}>
+                {card.count.toLocaleString()}
+              </h3>
+              <p
+                className="text-muted mb-1"
+                style={{ fontSize: "0.875rem", fontWeight: "500" }}>
+                {card.title}
+              </p>
+              <p className="text-muted mb-0" style={{ fontSize: "0.75rem" }}>
+                {card.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Content Grid */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Recent Reports */}
+        <div className="card">
+          <div className="card-header">
+            <div className="d-flex align-items-center justify-content-between">
+              <h3 className="mb-0">Recent Investor Reports</h3>
+              <Activity size={20} className="text-muted" />
+            </div>
+          </div>
+          <div className="card-body">
+            {stats.recentReports && stats.recentReports.length === 0 ? (
+              <div className="text-center text-muted">
+                <FileText size={48} className="mb-3" style={{ opacity: 0.3 }} />
+                <p>No reports uploaded yet</p>
+                <Link
+                  to="/investor-relations"
+                  className="btn btn-primary btn-sm">
+                  Upload First Report
+                </Link>
+              </div>
+            ) : (
+              <>
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.recentReports?.slice(0, 5).map((report) => (
+                        <tr key={report._id}>
+                          <td style={{ fontWeight: "500" }}>{report.title}</td>
+                          <td>
+                            <span
+                              className="badge"
+                              style={{
+                                backgroundColor: "#f1f5f9",
+                                color: "#475569",
+                                padding: "0.25rem 0.5rem",
+                                borderRadius: "0.375rem",
+                                fontSize: "0.75rem",
+                                fontWeight: "500",
+                              }}>
+                              {report.categoryId?.name || "N/A"}
+                            </span>
+                          </td>
+                          <td className="text-muted">
+                            <div className="d-flex align-items-center gap-1">
+                              <Clock size={14} />
+                              {new Date(
+                                report.uploadedDate
+                              ).toLocaleDateString()}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="card-footer">
+                  <Link
+                    to="/investor-relations"
+                    className="d-flex align-items-center gap-2 text-primary"
+                    style={{ fontSize: "0.875rem", fontWeight: "500" }}>
+                    View All Reports <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="mb-0">Quick Actions</h3>
+          </div>
+          <div className="card-body">
+            <div className="d-grid gap-3">
+              <Link to="/investor-relations" className="quick-action-card">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      backgroundColor: "#dbeafe",
+                      color: "#3b82f6",
+                    }}>
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <h4
+                      className="mb-1"
+                      style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                      Upload New Report
+                    </h4>
+                    <p
+                      className="text-muted mb-0"
+                      style={{ fontSize: "0.75rem" }}>
+                      Add investor documents
+                    </p>
+                  </div>
+                  <ArrowRight size={16} className="text-muted" />
+                </div>
+              </Link>
+
+              <Link to="/offices" className="quick-action-card">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      backgroundColor: "#dcfce7",
+                      color: "#10b981",
+                    }}>
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <h4
+                      className="mb-1"
+                      style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                      Add Office Location
+                    </h4>
+                    <p
+                      className="text-muted mb-0"
+                      style={{ fontSize: "0.75rem" }}>
+                      Manage office locations
+                    </p>
+                  </div>
+                  <ArrowRight size={16} className="text-muted" />
+                </div>
+              </Link>
+
+              <Link to="/blogs" className="quick-action-card">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      backgroundColor: "#fef3c7",
+                      color: "#f59e0b",
+                    }}>
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <h4
+                      className="mb-1"
+                      style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                      Create New Blog
+                    </h4>
+                    <p
+                      className="text-muted mb-0"
+                      style={{ fontSize: "0.75rem" }}>
+                      Write and publish content
+                    </p>
+                  </div>
+                  <ArrowRight size={16} className="text-muted" />
+                </div>
+              </Link>
+
+              <Link to="/contacts" className="quick-action-card">
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      backgroundColor: "#fce7f3",
+                      color: "#ec4899",
+                    }}>
+                    <MessageSquare size={20} />
+                  </div>
+                  <div>
+                    <h4
+                      className="mb-1"
+                      style={{ fontSize: "0.875rem", fontWeight: "600" }}>
+                      Review Inquiries
+                    </h4>
+                    <p
+                      className="text-muted mb-0"
+                      style={{ fontSize: "0.75rem" }}>
+                      Check customer messages
+                    </p>
+                  </div>
+                  <ArrowRight size={16} className="text-muted" />
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;
