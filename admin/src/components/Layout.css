@@ -8,15 +8,15 @@
 /* Sidebar Styles */
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  color: white;
+  background: #ffffff;
+  color: #334155;
   transition: all 0.3s ease;
   position: fixed;
   height: 100vh;
   z-index: 1000;
   overflow-y: auto;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+  border-right: 1px solid #e2e8f0;
 }
 
 .sidebar-closed {
@@ -25,28 +25,29 @@
 
 .sidebar-header {
   padding: 1.5rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  background: white;
 }
 
 .logo h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  color: #ef4444;
+  /* Fallback */
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+  text-shadow: none;
 }
 
 .logo span {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #64748b;
   display: block;
   margin-top: 0.25rem;
   font-weight: 500;
@@ -60,18 +61,18 @@
 }
 
 .sidebar-toggle {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 0.5rem;
   transition: all 0.2s;
-  backdrop-filter: blur(10px);
 }
 
 .sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #e2e8f0;
+  color: #1e293b;
   transform: scale(1.05);
 }
 
@@ -99,13 +100,14 @@
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  color: #e2e8f0;
+  color: #64748b;
   text-decoration: none;
   transition: all 0.3s ease;
   margin: 0 0.5rem;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   position: relative;
   overflow: hidden;
+  font-weight: 500;
 }
 
 .nav-item::before {
@@ -115,7 +117,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.05), transparent);
   transition: left 0.6s;
 }
 
@@ -124,30 +126,27 @@
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transform: translateX(6px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.nav-item-active {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  background: #e51f1f;
+  color: #f8f6f6;
   transform: translateX(4px);
 }
 
+.nav-item-active {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  transform: translateX(0);
+}
+
+.nav-item-active:hover {
+  color: white;
+  /* Keep white text for active item on hover */
+  transform: translateX(0);
+}
+
 .nav-item-active::after {
-  content: '';
-  position: absolute;
-  left: -0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(180deg, #60a5fa, #a78bfa);
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+  content: none;
+  /* Remove side indicator as we have full bg */
 }
 
 .nav-item-text {
@@ -173,11 +172,12 @@
   flex-direction: column;
 }
 
-.sidebar-closed + .main-content {
+.sidebar-closed+.main-content {
   margin-left: 0px;
 }
+
 @media (min-width: 768px) {
-.sidebar-closed+.main-content {
+  .sidebar-closed+.main-content {
     margin-left: 70px;
   }
 }
@@ -261,7 +261,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #f63b3b, #f65c8a);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -316,19 +316,19 @@
   .sidebar {
     transform: translateX(-100%);
   }
-  
+
   .sidebar-open {
     transform: translateX(0);
   }
-  
+
   .main-content {
     margin-left: 0;
   }
-  
+
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .mobile-overlay {
     display: block;
     position: fixed;
@@ -339,15 +339,15 @@
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
   }
-  
+
   .top-header {
     padding: 1rem;
   }
-  
+
   .page-content {
     padding: 1rem;
   }
-  
+
   .user-info {
     display: none;
   }
@@ -357,7 +357,7 @@
   .header-right {
     gap: 0.5rem;
   }
-  
+
   .header-btn {
     padding: 0.375rem;
   }
