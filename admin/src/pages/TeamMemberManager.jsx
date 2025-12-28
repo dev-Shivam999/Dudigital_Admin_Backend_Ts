@@ -133,7 +133,7 @@ const TeamMemberManager = () => {
 
             {loading ? <p>Loading...</p> : (
                 <div>
-                    {isGrouped ? (
+                    {isGrouped && !Array.isArray(teamData) ? (
                         Object.keys(teamData).map(category => (
                             <div key={category} style={{ marginBottom: '2rem' }}>
                                 <h3 style={{ borderBottom: '2px solid #007bff', paddingBottom: '0.5rem', marginBottom: '1rem', color: '#0056b3' }}>
@@ -144,11 +144,11 @@ const TeamMemberManager = () => {
                                 </div>
                             </div>
                         ))
-                    ) : (
+                    ) : !isGrouped && Array.isArray(teamData) ? (
                         <div>
-                            {Array.isArray(teamData) && teamData.map(renderMemberCard)}
+                            {teamData.map(renderMemberCard)}
                         </div>
-                    )}
+                    ) : null}
                 </div>
             )}
 

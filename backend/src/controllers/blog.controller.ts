@@ -52,10 +52,15 @@ export const createBlog = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Title and Content are required" });
         }
 
+        let featuredImageUrl = featuredImage;
+        if (req.file) {
+            featuredImageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+        }
+
         const newBlog = new Blog({
             title,
             content,
-            featuredImage,
+            featuredImage: featuredImageUrl,
             author, // Expecting { name: string } or can use default
             category,
             tags // Expecting array of strings
@@ -72,7 +77,13 @@ export const createBlog = async (req: Request, res: Response) => {
 export const updateBlog = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, { new: true });
+        let updateData = { ...req.body };
+
+        if (req.file) {
+            updateData.featuredImage = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+        }
+
+        const updatedBlog = await Blog.findByIdAndUpdate(id, updateData, { new: true });
 
         if (!updatedBlog) {
             return res.status(404).json({ message: "Blog not found" });

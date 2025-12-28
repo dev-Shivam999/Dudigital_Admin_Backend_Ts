@@ -21,6 +21,7 @@ const BlogEditor = () => {
     tags: "",
     authorName: "DU Digital Global",
   });
+  const [featuredImageFile, setFeaturedImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(isEditMode);
   const [preview, setPreview] = useState(false);
@@ -55,21 +56,29 @@ const BlogEditor = () => {
     e.preventDefault();
     setLoading(true);
 
-    const blogData = {
-      ...formData,
-      author: { name: formData.authorName },
-      tags: formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag),
-    };
+    const submitData = new FormData();
+    submitData.append("title", formData.title);
+    submitData.append("content", formData.content);
+    submitData.append("category", formData.category);
+    submitData.append("author[name]", formData.authorName);
+    
+    // Handle tags
+    const tagsArray = formData.tags.split(",").map((tag) => tag.trim()).filter((tag) => tag);
+    tagsArray.forEach(tag => submitData.append("tags[]", tag));
+
+    // Handle Image
+    if (featuredImageFile) {
+        submitData.append("featuredImage", featuredImageFile);
+    } else {
+        submitData.append("featuredImage", formData.featuredImage);
+    }
 
     try {
       if (isEditMode) {
-        await updateBlog(id, blogData);
+        await updateBlog(id, submitData);
         showSuccess("Blog updated successfully");
       } else {
-        await createBlog(blogData);
+        await createBlog(submitData);
         showSuccess("Blog created successfully");
       }
       navigate("/blogs");
@@ -229,6 +238,24 @@ const BlogEditor = () => {
                   }
                   placeholder="https://example.com/image.jpg"
                 />
+                <div className="mt-2">
+                    <label className="form-label small text-muted">Or Upload Image</label>
+                    <input 
+                        type="file" 
+                        className="form-control" 
+                        accept="image/*"
+                        onChange={(e) => {
+                            if (e.target.files[0]) {
+                                setFeaturedImageFile(e.target.files[0]);
+                                // Optional: Create object URL for preview
+                                setFormData({
+                                    ...formData,
+                                    featuredImage: URL.createObjectURL(e.target.files[0])
+                                });
+                            }
+                        }}
+                    />
+                </div>
                 {formData.featuredImage && (
                   <div className="mt-2">
                     <img
