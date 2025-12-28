@@ -66,8 +66,9 @@ const seedSalesExperts = async () => {
         for (const expert of salesExperts) {
             // Find matching office location
             const office = locations.find(loc =>
-                (loc.city && loc.city.includes(expert.officeLocationMatch)) ||
-                (loc.address && loc.address.includes(expert.officeLocationMatch))
+                (loc.address && loc.address.city && loc.address.city.includes(expert.officeLocationMatch)) ||
+                (loc.address && loc.address.line1 && loc.address.line1.includes(expert.officeLocationMatch)) ||
+                (loc.officeName && loc.officeName.includes(expert.officeLocationMatch))
             );
 
             if (office) {
