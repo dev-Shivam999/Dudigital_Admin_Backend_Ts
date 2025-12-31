@@ -255,3 +255,30 @@ export const deleteTeamMember = async (id) => {
     const response = await axios.delete(`${API_URL_TEAM}/${id}`);
     return response.data;
 };
+
+// --- Travel Packages ---
+const API_URL_TRAVEL = `${API_BASE_URL}/travel-packages`;
+
+export const getTravelPackages = async () => {
+    const response = await axios.get(API_URL_TRAVEL);
+    return response.data;
+};
+
+export const createTravelPackage = async (formData) => {
+    const response = await axios.post(API_URL_TRAVEL, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+};
+
+export const updateTravelPackage = async (id, formData) => {
+    const response = await axios.put(`${API_URL_TRAVEL}/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+};
+
+export const deleteTravelPackage = async (id) => {
+    const response = await axios.delete(`${API_URL_TRAVEL}/${id}`);
+    return response.data;
+};
