@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Enable CORS
 import cors from 'cors';
 app.use(cors({
-  origin: ['http://localhost:5173','http://localhost:5174'],
+  origin: '*',
   credentials: true
 }));
 
