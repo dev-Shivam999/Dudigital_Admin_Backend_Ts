@@ -10,10 +10,11 @@ const TeamMemberManager = () => {
     const [formData, setFormData] = useState({
         name: '',
         designation: '',
-        profileImage: '',
+        profileImage: '', // Can be string URL or File object
         category: '',
         description: ''
     });
+    const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
         fetchTeamMembers();
@@ -36,11 +37,25 @@ const TeamMemberManager = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const data = new FormData();
+            data.append('name', formData.name);
+            data.append('designation', formData.designation);
+            data.append('category', formData.category);
+            data.append('description', formData.description);
+
+            if (formData.profileImage instanceof File) {
+                data.append('image', formData.profileImage);
+            } else if (typeof formData.profileImage === 'string' && formData.profileImage) {
+                 // Even if it's a string, we might want to send it if the backend supports URL updates, 
+                 // but typically we rely on the file input for changes. 
+                 // If no new file, backend keeps old image.
+            }
+
             if (editingId) {
-                await updateTeamMember(editingId, formData);
+                await updateTeamMember(editingId, data); // API needs to handle FormData
                 alert('Team member updated');
             } else {
-                await createTeamMember(formData);
+                await createTeamMember(data); // API needs to handle FormData
                 alert('Team member created');
             }
             setShowModal(false);
@@ -71,12 +86,21 @@ const TeamMemberManager = () => {
             category: member.category || '',
             description: member.description || ''
         });
+        if (member.profileImage) {
+            // Check if it's a full URL or a relative path from uploads
+            const isUrl = member.profileImage.startsWith('http');
+            const preview = isUrl ? member.profileImage : `${import.meta.env.VITE_API_BASE_URL}${member.profileImage}`;
+            setImagePreview(preview);
+        } else {
+            setImagePreview(null);
+        }
         setEditingId(member._id);
         setShowModal(true);
     };
 
     const resetForm = () => {
         setFormData({ name: '', designation: '', profileImage: '', category: '', description: '' });
+        setImagePreview(null);
         setEditingId(null);
     };
 
@@ -87,7 +111,7 @@ const TeamMemberManager = () => {
             display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', backgroundColor: '#fff'
         }}>
             <img
-                src={member.profileImage || 'https://via.placeholder.com/60'}
+                src={member.profileImage ? (member.profileImage.startsWith('http') ? member.profileImage : `${import.meta.env.VITE_API_BASE_URL}${member.profileImage}`) : 'https://via.placeholder.com/60'}
                 alt={member.name}
                 style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }}
             />
@@ -169,8 +193,24 @@ const TeamMemberManager = () => {
                             <label>Category</label>
                             <input type="text" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} style={inputStyle} placeholder="e.g. Leadership, Advisory" />
 
-                            <label>Profile Image URL</label>
-                            <input type="text" value={formData.profileImage} onChange={e => setFormData({ ...formData, profileImage: e.target.value })} style={inputStyle} placeholder="https://..." />
+                            <label>Profile Image</label>
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={e => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        setFormData({ ...formData, profileImage: file });
+                                        setImagePreview(URL.createObjectURL(file));
+                                    }
+                                }} 
+                                style={inputStyle} 
+                            />
+                            {imagePreview && (
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <img src={imagePreview} alt="Preview" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                                </div>
+                            )}
 
                             <label>Description</label>
                             <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} style={{ ...inputStyle, height: '80px' }} />
