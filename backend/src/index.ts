@@ -41,6 +41,7 @@ import teamMemberRoutes from './routes/teamMember.routes';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 import travelPackageRoutes from './routes/travelPackage.routes';
+import travelInquiryRoutes from './routes/travelInquiry.routes';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -58,6 +59,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/team-members', teamMemberRoutes);
 app.use('/api/travel-packages', travelPackageRoutes);
+app.use('/api/travel-inquiries', travelInquiryRoutes);
 
 
 

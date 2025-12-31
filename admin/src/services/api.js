@@ -282,3 +282,16 @@ export const deleteTravelPackage = async (id) => {
     const response = await axios.delete(`${API_URL_TRAVEL}/${id}`);
     return response.data;
 };
+
+// --- Travel Inquiries ---
+const API_URL_TRAVEL_INQUIRY = `${API_BASE_URL}/travel-inquiries`;
+
+export const getTravelInquiries = async () => {
+    const response = await axios.get(API_URL_TRAVEL_INQUIRY);
+    return response.data;
+};
+
+export const getTravelInquiryStats = async () => {
+    const response = await axios.get(`${API_URL_TRAVEL_INQUIRY}/stats`);
+    return response.data;
+};

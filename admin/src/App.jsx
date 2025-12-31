@@ -16,6 +16,7 @@ import BlogEditor from "./pages/BlogEditor";
 import TeamMemberManager from "./pages/TeamMemberManager";
 import UserManager from "./pages/UserManager";
 import TravelPackageManager from "./pages/TravelPackageManager";
+import TravelInquiryManager from "./pages/TravelInquiryManager";
 import Dashboard from "./pages/Dashboard";
 import "./components/Layout.css";
 import "./App.css";
@@ -93,6 +94,7 @@ function App() {
           <Route path="team-members" element={<TeamMemberManager />} />
           <Route path="users" element={<UserManager />} />
           <Route path="travel-packages" element={<TravelPackageManager />} />
+          <Route path="travel-inquiries" element={<TravelInquiryManager />} />
         </Route>
       </Routes>
     </Router>
