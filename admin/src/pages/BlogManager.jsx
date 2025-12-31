@@ -267,25 +267,18 @@ const BlogManager = () => {
 
                       {blog.tags && blog.tags.length > 0 && (
                         <div className="d-flex gap-1 mt-2">
-                          {blog.tags.slice(0, 3).map((tag, index) => (
+                       
                             <span
-                              key={index}
                               className="badge"
                               style={{
                                 backgroundColor: "#e0f2fe",
                                 color: "#0369a1",
                                 fontSize: "0.75rem",
                               }}>
-                              {tag}
+                            { blog.tags}
                             </span>
-                          ))}
-                          {blog.tags.length > 3 && (
-                            <span
-                              className="text-muted"
-                              style={{ fontSize: "0.75rem" }}>
-                              +{blog.tags.length - 3} more
-                            </span>
-                          )}
+                          
+                      
                         </div>
                       )}
                     </div>
