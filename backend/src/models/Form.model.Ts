@@ -10,6 +10,9 @@ const formSchema = new mongoose.Schema(
         slug: {
             type: String,
         },
+        image: {
+            type: String,
+        },
 
         description: {type:String},
 
