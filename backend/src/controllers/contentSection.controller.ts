@@ -57,15 +57,16 @@ export const createContentSection = async (req: Request, res: Response) => {
         // Handle multiple image uploads (up to 4)
         let imageUrls: string[] = [];
         if (req.files && Array.isArray(req.files)) {
-            imageUrls = (req.files as Express.Multer.File[]).map(
+            const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images');
+            imageUrls = uploadedFiles.map(
                 (file) => `/api/uploads/${file.filename}`
             );
         }
         // Also support existing image URLs passed in body
-        if (req.body.images) {
-            const existingImages = Array.isArray(req.body.images)
-                ? req.body.images
-                : [req.body.images];
+        if (req.body.existingImages) {
+            const existingImages = Array.isArray(req.body.existingImages)
+                ? req.body.existingImages
+                : [req.body.existingImages];
             imageUrls = [...imageUrls, ...existingImages];
         }
 
@@ -124,7 +125,8 @@ export const updateContentSection = async (req: Request, res: Response) => {
 
         // Add newly uploaded images
         if (req.files && Array.isArray(req.files)) {
-            const newImageUrls = (req.files as Express.Multer.File[]).map(
+            const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images');
+            const newImageUrls = uploadedFiles.map(
                 (file) => `/api/uploads/${file.filename}`
             );
             imageUrls = [...imageUrls, ...newImageUrls];
