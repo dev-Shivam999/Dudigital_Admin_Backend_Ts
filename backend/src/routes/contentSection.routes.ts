@@ -25,8 +25,8 @@ const upload = multer({ storage });
 
 router.get("/", getContentSections);
 router.get("/:id", getContentSectionById);
-router.post("/", upload.single("image"), createContentSection);
-router.put("/:id", upload.single("image"), updateContentSection);
+router.post("/", upload.array("images", 4), createContentSection);
+router.put("/:id", upload.array("images", 4), updateContentSection);
 router.delete("/:id", deleteContentSection);
 
 export default router;

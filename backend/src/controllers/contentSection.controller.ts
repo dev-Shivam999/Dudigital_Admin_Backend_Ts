@@ -54,10 +54,19 @@ export const createContentSection = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Form not found" });
         }
 
-        // Handle image upload
-        let imageUrl = req.body.image || '';
-        if (req.file) {
-            imageUrl = `${req.protocol}://${req.get("host")}/api/uploads/${req.file.filename}`;
+        // Handle multiple image uploads (up to 4)
+        let imageUrls: string[] = [];
+        if (req.files && Array.isArray(req.files)) {
+            imageUrls = (req.files as Express.Multer.File[]).map(
+                (file) => `/api/uploads/${file.filename}`
+            );
+        }
+        // Also support existing image URLs passed in body
+        if (req.body.images) {
+            const existingImages = Array.isArray(req.body.images)
+                ? req.body.images
+                : [req.body.images];
+            imageUrls = [...imageUrls, ...existingImages];
         }
 
         // Get max order for this form
@@ -71,7 +80,7 @@ export const createContentSection = async (req: Request, res: Response) => {
             sectionKey,
             title,
             contentHtml,
-            image: imageUrl,
+            images: imageUrls,
             badge: badge || {},
             layout: layout || 'LEFT_TEXT_RIGHT_IMAGE',
             order: newOrder,
@@ -101,9 +110,29 @@ export const updateContentSection = async (req: Request, res: Response) => {
             }
         }
 
-        // Handle image upload
-        if (req.file) {
-            updateData.image = `${req.protocol}://${req.get("host")}/api/uploads/${req.file.filename}`;
+        // Handle multiple image uploads (up to 4)
+        let imageUrls: string[] = [];
+
+        // Keep existing images if provided
+        if (updateData.existingImages) {
+            const existing = Array.isArray(updateData.existingImages)
+                ? updateData.existingImages
+                : [updateData.existingImages];
+            imageUrls = [...existing];
+            delete updateData.existingImages;
+        }
+
+        // Add newly uploaded images
+        if (req.files && Array.isArray(req.files)) {
+            const newImageUrls = (req.files as Express.Multer.File[]).map(
+                (file) => `/api/uploads/${file.filename}`
+            );
+            imageUrls = [...imageUrls, ...newImageUrls];
+        }
+
+        // Only update images field if we have new images or explicitly updating
+        if (imageUrls.length > 0 || updateData.images !== undefined) {
+            updateData.images = imageUrls.length > 0 ? imageUrls : updateData.images;
         }
 
         const updatedSection = await ContentSection.findByIdAndUpdate(

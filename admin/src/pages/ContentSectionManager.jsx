@@ -15,13 +15,14 @@ const ContentSectionManager = () => {
         sectionKey: '',
         title: '',
         contentHtml: '',
-        image: null,
+        images: [],
         badgeText: '',
         badgeBackground: '#007bff',
         layout: 'LEFT_TEXT_RIGHT_IMAGE',
         isActive: true
     });
-    const [imagePreview, setImagePreview] = useState('');
+    const [imagePreviews, setImagePreviews] = useState([]);
+    const [fileInputKey, setFileInputKey] = useState(0);
     const [editingId, setEditingId] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -75,11 +76,19 @@ const ContentSectionManager = () => {
                 data.append('badge[background]', formData.badgeBackground);
             }
             
-            if (formData.image instanceof File) {
-                data.append('image', formData.image);
-            } else if (typeof formData.image === 'string' && formData.image) {
-                data.append('image', formData.image);
-            }
+            // Handle multiple images
+            const existingImages = [];
+            formData.images.forEach((img) => {
+                if (img instanceof File) {
+                    data.append('images', img);
+                } else if (typeof img === 'string' && img) {
+                    existingImages.push(img);
+                }
+            });
+            // Send existing image URLs separately
+            existingImages.forEach((url) => {
+                data.append('existingImages', url);
+            });
 
             if (editingId) {
                 await updateContentSection(editingId, data);
@@ -111,28 +120,56 @@ const ContentSectionManager = () => {
     };
 
     const handleEdit = (section) => {
+        const sectionImages = section.images || (section.image ? [section.image] : []);
         setFormData({
             formId: section.formId?._id || section.formId,
             sectionKey: section.sectionKey,
             title: section.title,
             contentHtml: section.contentHtml,
-            image: section.image,
+            images: sectionImages,
             badgeText: section.badge?.text || '',
             badgeBackground: section.badge?.background || '#007bff',
             layout: section.layout,
             isActive: section.isActive
         });
-        setImagePreview(section.image);
+        setImagePreviews(sectionImages);
         setEditingId(section._id);
         setShowModal(true);
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setFormData({ ...formData, image: file });
-            setImagePreview(URL.createObjectURL(file));
+        const files = Array.from(e.target.files);
+        if (!files || files.length === 0) return;
+        
+        const currentCount = formData.images.length;
+        const remainingSlots = 4 - currentCount;
+        
+        if (remainingSlots <= 0) {
+            alert('Maximum 4 images allowed.');
+            return;
         }
+        
+        // Take only as many files as we have slots for
+        const filesToAdd = files.slice(0, remainingSlots);
+        
+        if (files.length > remainingSlots) {
+            alert(`Only ${remainingSlots} more image(s) can be added. Adding first ${remainingSlots}.`);
+        }
+        
+        const newImages = [...formData.images, ...filesToAdd];
+        const newPreviews = [...imagePreviews, ...filesToAdd.map(f => URL.createObjectURL(f))];
+        
+        setFormData(prev => ({ ...prev, images: newImages }));
+        setImagePreviews(newPreviews);
+        // Reset file input to allow selecting same file again or one-by-one selection
+        setFileInputKey(prev => prev + 1);
+    };
+
+    const removeImage = (index) => {
+        const newImages = formData.images.filter((_, i) => i !== index);
+        const newPreviews = imagePreviews.filter((_, i) => i !== index);
+        setFormData({ ...formData, images: newImages });
+        setImagePreviews(newPreviews);
     };
 
     const resetForm = () => {
@@ -141,13 +178,14 @@ const ContentSectionManager = () => {
             sectionKey: '',
             title: '',
             contentHtml: '',
-            image: null,
+            images: [],
             badgeText: '',
             badgeBackground: '#007bff',
             layout: 'LEFT_TEXT_RIGHT_IMAGE',
             isActive: true
         });
-        setImagePreview('');
+        setImagePreviews([]);
+        setFileInputKey(prev => prev + 1);
         setEditingId(null);
         setShowModal(false);
     };
@@ -214,19 +252,29 @@ const ContentSectionManager = () => {
                     }}>
                         {/* Image Preview */}
                         <div style={{ position: 'relative', height: '180px', backgroundColor: '#f0f0f0' }}>
-                            {section.image ? (
-                                <img 
-                                    src={section.image} 
-                                    alt={section.title}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
+                            {(section.images && section.images.length > 0) || section.image ? (
+                                <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+                                    {(section.images || [section.image]).filter(Boolean).slice(0, 4).map((img, idx) => (
+                                        <img 
+                                            key={idx}
+                                            src={`${import.meta.env.VITE_API_BASE_URL.replace("/api","")}${img}`} 
+                                            alt={`${section.title} ${idx + 1}`}
+                                            style={{ 
+                                                flex: 1, 
+                                                height: '100%', 
+                                                objectFit: 'cover',
+                                                borderRight: idx < (section.images || [section.image]).length - 1 ? '2px solid white' : 'none'
+                                            }}
+                                        />
+                                    ))}
+                                </div>
                             ) : (
                                 <div style={{ 
                                     width: '100%', height: '100%', 
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     color: '#999'
                                 }}>
-                                    No Image
+                                    No Images
                                 </div>
                             )}
                             {section.badge?.text && (
@@ -398,23 +446,69 @@ const ContentSectionManager = () => {
                                 />
                             </div>
 
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                                    Images (Max 4) - {formData.images.length}/4 selected
+                                </label>
+                                <input
+                                    key={fileInputKey}
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    style={inputStyle}
+                                    disabled={formData.images.length >= 4}
+                                />
+                                
+                                {imagePreviews.length > 0 && (
+                                    <div style={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: 'repeat(4, 1fr)', 
+                                        gap: '0.5rem', 
+                                        marginTop: '0.5rem' 
+                                    }}>
+                                        {imagePreviews.map((preview, idx) => (
+                                            <div key={idx} style={{ position: 'relative' }}>
+                                                <img 
+                                                    src={preview} 
+                                                    alt={`Preview ${idx + 1}`} 
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        height: '80px', 
+                                                        objectFit: 'cover', 
+                                                        borderRadius: '4px',
+                                                        border: '1px solid #ddd'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(idx)}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '-8px',
+                                                        right: '-8px',
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        fontSize: '12px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Image *</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageChange}
-                                        style={inputStyle}
-                                    />
-                                    {imagePreview && (
-                                        <img 
-                                            src={imagePreview} 
-                                            alt="Preview" 
-                                            style={{ marginTop: '0.5rem', maxWidth: '100%', maxHeight: '120px', borderRadius: '4px' }}
-                                        />
-                                    )}
-                                </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Layout</label>
                                     <select
