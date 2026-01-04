@@ -122,11 +122,17 @@ export const createForm = async (req: Request, res: Response) => {
         });
 
         const savedForm = await newForm.save();
+        let parsedFields = fields;
+        if (typeof fields === 'string') {
+            try {
+                parsedFields = JSON.parse(fields);
+            } catch (e) {
+                parsedFields = [];
+            }
+        }
 
-
-        // Create fields if provided
-        if (fields && Array.isArray(fields) && fields.length > 0) {
-            const formFields = fields.map((field: any, index: number) => ({
+        if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
+            const formFields = parsedFields.map((field: any, index: number) => ({
                 formId: savedForm._id,
                 label: field.label,
                 name: field.name,
@@ -191,6 +197,8 @@ export const updateForm = async (req: Request, res: Response) => {
 
         if (parsedFields && Array.isArray(parsedFields) && parsedFields.length > 0) {
             // Get existing field IDs
+            console.log("reach here");
+
             const existingFields = await FormField.find({ formId: id });
             const existingFieldIds = existingFields.map(f => f._id.toString());
 

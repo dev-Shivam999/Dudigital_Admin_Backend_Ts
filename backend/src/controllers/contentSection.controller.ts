@@ -56,11 +56,17 @@ export const createContentSection = async (req: Request, res: Response) => {
 
         // Handle multiple image uploads (up to 4)
         let imageUrls: string[] = [];
+        console.log('CREATE - req.files:', req.files);
+        console.log('CREATE - req.files is array:', Array.isArray(req.files));
+
         if (req.files && Array.isArray(req.files)) {
-            const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images');
+            // Accept both 'image' and 'images' fieldnames
+            const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images' || f.fieldname === 'image');
+            console.log('CREATE - Uploaded files with fieldname "images":', uploadedFiles.length);
             imageUrls = uploadedFiles.map(
                 (file) => `/api/uploads/${file.filename}`
             );
+            console.log('CREATE - Image URLs:', imageUrls);
         }
         // Also support existing image URLs passed in body
         if (req.body.existingImages) {
@@ -69,6 +75,8 @@ export const createContentSection = async (req: Request, res: Response) => {
                 : [req.body.existingImages];
             imageUrls = [...imageUrls, ...existingImages];
         }
+
+        console.log('CREATE - Final imageUrls:', imageUrls);
 
         // Get max order for this form
         const maxOrder = await ContentSection.findOne({ formId })
@@ -88,6 +96,8 @@ export const createContentSection = async (req: Request, res: Response) => {
             isActive: isActive !== undefined ? isActive : true
         });
 
+        console.log('CREATE - New section images field:', newSection.images);
+
         const savedSection = await newSection.save();
         const populated = await savedSection.populate('formId', 'name slug');
 
@@ -102,6 +112,9 @@ export const updateContentSection = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const updateData = { ...req.body };
+
+        // Remove any images field from body that might conflict (it comes as text, not files)
+        delete updateData.images;
 
         // If formId is being updated, verify form exists
         if (updateData.formId) {
@@ -121,21 +134,34 @@ export const updateContentSection = async (req: Request, res: Response) => {
                 : [updateData.existingImages];
             imageUrls = [...existing];
             delete updateData.existingImages;
+            console.log('UPDATE - Existing images:', existing);
         }
 
         // Add newly uploaded images
-        if (req.files && Array.isArray(req.files)) {
-            const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images');
-            const newImageUrls = uploadedFiles.map(
-                (file) => `/api/uploads/${file.filename}`
-            );
-            imageUrls = [...imageUrls, ...newImageUrls];
+        console.log('UPDATE - req.files:', req.files);
+        console.log('UPDATE - req.files type:', typeof req.files);
+        if (req.files) {
+            if (Array.isArray(req.files)) {
+                console.log('UPDATE - All files:', req.files.map((f: any) => ({ fieldname: f.fieldname, filename: f.filename })));
+                // Accept both 'image' and 'images' fieldnames
+                const uploadedFiles = (req.files as Express.Multer.File[]).filter(f => f.fieldname === 'images' || f.fieldname === 'image');
+                console.log('UPDATE - Files with fieldname "images":', uploadedFiles.length);
+                const newImageUrls = uploadedFiles.map(
+                    (file) => `/api/uploads/${file.filename}`
+                );
+                imageUrls = [...imageUrls, ...newImageUrls];
+            } else {
+                console.log('UPDATE - req.files is object:', Object.keys(req.files));
+            }
         }
 
-        // Only update images field if we have new images or explicitly updating
-        if (imageUrls.length > 0 || updateData.images !== undefined) {
-            updateData.images = imageUrls.length > 0 ? imageUrls : updateData.images;
+        // Always set images if we have any (uploaded or existing)
+        if (imageUrls.length > 0) {
+            updateData.images = imageUrls;
         }
+
+        console.log('UPDATE - Final imageUrls:', imageUrls);
+        console.log('UPDATE - updateData.images:', updateData.images);
 
         const updatedSection = await ContentSection.findByIdAndUpdate(
             id,
