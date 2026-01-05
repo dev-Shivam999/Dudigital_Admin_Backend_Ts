@@ -14,7 +14,12 @@ const formSchema = new mongoose.Schema(
             type: String,
         },
 
-        description: {type:String},
+        description: { type: String },
+
+        adminNotificationEmail: {
+            type: String,
+            trim: true
+        },
 
         isActive: {
             type: Boolean,
